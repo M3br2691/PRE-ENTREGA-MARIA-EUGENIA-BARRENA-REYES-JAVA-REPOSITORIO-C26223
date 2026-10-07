@@ -4,23 +4,27 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import com.techlab.articulo.model.Articulo;
 import com.techlab.articulo.model.Categoria;
+import com.techlab.articulo.model.ArticuloElectronico;
+import com.techlab.articulo.model.ArticuloPeriferico;
+import com.techlab.articulo.model.ArticuloAlimenticio;
+import com.techlab.articulo.model.ArticuloLimpieza;
 
 public class App {
 
     public static void main(String[] args) {
         // 1. Crear el objeto Scanner para leer datos
         Scanner scanner = new Scanner(System.in);
-        
+
         // 2. Crear listas ArrayList para almacenar artículos y categorías
         ArrayList<Articulo> articulos = new ArrayList<>();
         ArrayList<Categoria> categorias = new ArrayList<>();
-        
+
         // 3. Invocar el método que precarga las categorías
         precargarCategorias(categorias);
-        
+
         // 4. Variable para controlar el menú
         int opcion;
-        
+
         // 5. Ciclo do-while para mantener el programa en ejecución
         do {
             System.out.println("======================================================");
@@ -34,11 +38,11 @@ public class App {
             System.out.println("6 - Listar categorías");
             System.out.println("0 - Salir");
             System.out.println("======================================================");
-            
+
             // Utilizamos el método auxiliar validado para leer la opción del menú
             opcion = leerEntero(scanner, "Ingrese una opción: ");
-            
-                      // 6. Utilizar un switch para ejecutar la opción seleccionada
+
+            // 6. Utilizar un switch para ejecutar la opción seleccionada
             switch (opcion) {
                 case 1:
                     ingresarArticulo(scanner, articulos, categorias);
@@ -49,8 +53,8 @@ public class App {
                 case 3:
                     consultarArticulo(scanner, articulos);
                     break;
-                 case 4:
-                    modificarArticulo(scanner, articulos, categorias);
+                case 4:
+                    modificarArticulo(scanner, articulos);
                     break;
                 case 5:
                     eliminarArticulo(scanner, articulos);
@@ -66,9 +70,8 @@ public class App {
                     break;
             }
 
-            
         } while (opcion != 0); // Termina si el usuario elige 0
-        
+
         // 7. Cerrar el Scanner al finalizar
         scanner.close();
     }
@@ -135,7 +138,7 @@ public class App {
                 System.out.print(mensaje);
                 String entrada = scanner.nextLine().trim();
                 double valor = Double.parseDouble(entrada);
-                
+
                 // Rechazar valores negativos, NaN o Infinity
                 if (valor < 0 || Double.isNaN(valor) || Double.isInfinite(valor)) {
                     System.out.println("❌ Error: El valor debe ser un número decimal positivo y válido.");
@@ -148,7 +151,7 @@ public class App {
         }
     }
 
-        // =========================================================================
+    // =========================================================================
     // 5. MÉTODOS DE BÚSQUEDA OBLIGATORIOS
     // =========================================================================
 
@@ -179,14 +182,15 @@ public class App {
     // =========================================================================
     // 6.1. Opción 1: Ingresar Artículo (Uso de Polimorfismo)
     // =========================================================================
-    public static void ingresarArticulo(Scanner scanner, ArrayList<Articulo> articulos, ArrayList<Categoria> categorias) {
+    public static void ingresarArticulo(Scanner scanner, ArrayList<Articulo> articulos,
+            ArrayList<Categoria> categorias) {
         System.out.println("\n--- NUEVO ARTÍCULO ---");
-        
+
         int codigo;
         while (true) {
             codigo = leerEnteroNoNegativo(scanner, "Ingrese el código del artículo: ");
             if (buscarArticuloPorCodigo(articulos, codigo) == null) {
-                break; 
+                break;
             }
             System.out.println("❌ Error: Ya existe un artículo registrado con ese código.");
         }
@@ -198,7 +202,7 @@ public class App {
         for (Categoria cat : categorias) {
             System.out.println("  " + cat.getCodigo() + " - " + cat.getNombre());
         }
-        
+
         Categoria categoriaSeleccionada = null;
         while (categoriaSeleccionada == null) {
             int codCat = leerEntero(scanner, "Seleccione el código de la categoría: ");
@@ -208,26 +212,58 @@ public class App {
             }
         }
 
-        System.out.println("\nTipo de artículo a registrar:");
-        System.out.println("  1 - Electrónico");
-        System.out.println("  2 - Alimenticio");
-        
-        int tipo;
-        while (true) {
-            tipo = leerEntero(scanner, "Seleccione una opción (1 o 2): ");
-            if (tipo == 1 || tipo == 2) {
-                break;
-            }
-            System.out.println("❌ Error: Opción inválida. Ingrese 1 o 2.");
+        Articulo articulo;
+
+        if (categoriaSeleccionada.getCodigo() == 1) {
+            int garantia = leerEnteroNoNegativo(
+                    scanner,
+                    "Ingrese los meses de garantía: ");
+
+            articulo = new ArticuloElectronico(
+                    codigo,
+                    nombre,
+                    precio,
+                    categoriaSeleccionada,
+                    garantia);
+
+        } else if (categoriaSeleccionada.getCodigo() == 2) {
+            int garantia = leerEnteroNoNegativo(
+                    scanner,
+                    "Ingrese los meses de garantía: ");
+
+            articulo = new ArticuloPeriferico(
+                    codigo,
+                    nombre,
+                    precio,
+                    categoriaSeleccionada,
+                    garantia);
+
+        } else if (categoriaSeleccionada.getCodigo() == 3) {
+            int diasVencimiento = leerEnteroNoNegativo(
+                    scanner,
+                    "Ingrese los días restantes para el vencimiento: ");
+
+            articulo = new ArticuloAlimenticio(
+                    codigo,
+                    nombre,
+                    precio,
+                    categoriaSeleccionada,
+                    diasVencimiento);
+
+        } else {
+            int diasVencimiento = leerEnteroNoNegativo(
+                    scanner,
+                    "Ingrese los días restantes para el vencimiento: ");
+
+            articulo = new ArticuloLimpieza(
+                    codigo,
+                    nombre,
+                    precio,
+                    categoriaSeleccionada,
+                    diasVencimiento);
         }
 
-        if (tipo == 1) {
-            int garantia = leerEnteroNoNegativo(scanner, "Ingrese los meses de garantía: ");
-            articulos.add(new com.techlab.articulo.model.ArticuloElectronico(codigo, nombre, precio, categoriaSeleccionada, garantia));
-        } else {
-            int diasVencimiento = leerEnteroNoNegativo(scanner, "Ingrese los días restantes para el vencimiento: ");
-            articulos.add(new com.techlab.articulo.model.ArticuloAlimenticio(codigo, nombre, precio, categoriaSeleccionada, diasVencimiento));
-        }
+        articulos.add(articulo);
 
         System.out.println("\n✅ Artículo registrado con éxito.\n");
     }
@@ -237,23 +273,19 @@ public class App {
     // =========================================================================
     public static void listarArticulos(ArrayList<Articulo> articulos) {
         System.out.println("\n--- LISTA DE ARTÍCULOS REGISTRADOS ---");
-        
+
         if (articulos.isEmpty()) {
             System.out.println("⚠️ No hay artículos registrados en el sistema.");
         } else {
             for (Articulo art : articulos) {
-                System.out.println(art); 
+                System.out.println(art);
                 System.out.println("------------------------------------------------------");
             }
         }
         System.out.println();
     }
-        /**
-     * 7.7. Leer texto no vacío ni lleno de puros espacios
-     */
-          /**
-     * 7.7. Leer texto no vacío ni lleno de puros espacios
-     */
+
+  
     public static String leerTextoNoVacio(Scanner scanner, String mensaje) {
         while (true) {
             System.out.print(mensaje);
@@ -276,7 +308,7 @@ public class App {
         }
         int codigo = leerEnteroNoNegativo(scanner, "Ingrese el código del artículo a consultar: ");
         Articulo art = buscarArticuloPorCodigo(articulos, codigo);
-        
+
         if (art != null) {
             System.out.println("\n✅ Artículo encontrado:");
             System.out.println(art);
@@ -293,7 +325,7 @@ public class App {
     // =========================================================================
     // 6.4. Opción 4: Modificar un Artículo
     // =========================================================================
-    public static void modificarArticulo(Scanner scanner, ArrayList<Articulo> articulos, ArrayList<Categoria> categorias) {
+    public static void modificarArticulo(Scanner scanner, ArrayList<Articulo> articulos)  {
         System.out.println("\n--- MODIFICAR ARTÍCULO ---");
         if (articulos.isEmpty()) {
             System.out.println("⚠️ No hay artículos registrados en el sistema.");
@@ -301,41 +333,47 @@ public class App {
         }
         int codigo = leerEnteroNoNegativo(scanner, "Ingrese el código del artículo a modificar: ");
         Articulo art = buscarArticuloPorCodigo(articulos, codigo);
-        
+
         if (art != null) {
             System.out.println("\nDatos actuales del artículo:");
             System.out.println(art);
-            
+
             System.out.println("\n--- Ingrese los nuevos datos ---");
             String nuevoNombre = leerTextoNoVacio(scanner, "Nuevo nombre: ");
             double nuevoPrecio = leerDoubleNoNegativo(scanner, "Nuevo precio: ");
-            
-            System.out.println("\nCategorías disponibles:");
-            for (Categoria cat : categorias) {
-                System.out.println("  " + cat.getCodigo() + " - " + cat.getNombre());
-            }
-            
-            Categoria nuevaCategoria = null;
-            while (nuevaCategoria == null) {
-                int codCat = leerEntero(scanner, "Seleccione el código de la nueva categoría: ");
-                nuevaCategoria = buscarCategoriaPorCodigo(categorias, codCat);
-                if (nuevaCategoria == null) {
-                    System.out.println("❌ Error: El código de categoría ingresado no existe.");
-                }
-            }
+
             
             art.setNombre(nuevoNombre);
             art.setPrecio(nuevoPrecio);
-            art.setCategoria(nuevaCategoria);
             
-            if (art instanceof com.techlab.articulo.model.ArticuloElectronico) {
-                int nuevaGarantia = leerEnteroNoNegativo(scanner, "Nuevos meses de garantía: ");
-                ((com.techlab.articulo.model.ArticuloElectronico) art).setGarantiaMeses(nuevaGarantia);
-            } else if (art instanceof com.techlab.articulo.model.ArticuloAlimenticio) {
-                int nuevosDias = leerEnteroNoNegativo(scanner, "Nuevos días para el vencimiento: ");
-                ((com.techlab.articulo.model.ArticuloAlimenticio) art).setDiasParaVencimiento(nuevosDias);
+            if (art instanceof ArticuloElectronico) {
+                int nuevaGarantia = leerEnteroNoNegativo(
+                        scanner,
+                        "Nuevos meses de garantía: ");
+
+                ((ArticuloElectronico) art).setGarantiaMeses(nuevaGarantia);
+
+            } else if (art instanceof ArticuloPeriferico) {
+                int nuevaGarantia = leerEnteroNoNegativo(
+                        scanner,
+                        "Nuevos meses de garantía: ");
+
+                ((ArticuloPeriferico) art).setGarantiaMeses(nuevaGarantia);
+
+            } else if (art instanceof ArticuloAlimenticio) {
+                int nuevosDias = leerEnteroNoNegativo(
+                        scanner,
+                        "Nuevos días para el vencimiento: ");
+
+                ((ArticuloAlimenticio) art).setDiasParaVencimiento(nuevosDias);
+
+            } else if (art instanceof ArticuloLimpieza) {
+                int nuevosDias = leerEnteroNoNegativo(
+                        scanner,
+                        "Nuevos días para el vencimiento: ");
+
+                ((ArticuloLimpieza) art).setDiasParaVencimiento(nuevosDias);
             }
-            
             System.out.println("\n✅ Artículo modificado con éxito.\n");
         } else {
             System.out.println("❌ Error: No se encontró ningún artículo con el código " + codigo);
@@ -353,7 +391,7 @@ public class App {
         }
         int codigo = leerEnteroNoNegativo(scanner, "Ingrese el código del artículo a eliminar: ");
         Articulo art = buscarArticuloPorCodigo(articulos, codigo);
-        
+
         if (art != null) {
             articulos.remove(art);
             System.out.println("\n✅ Artículo eliminado correctamente de los registros.\n");
