@@ -20,6 +20,15 @@ public class ArticuloElectronico extends Articulo {
     public String getDetalleEspecifico() {
         return "Garantía: " + garantiaMeses + " meses";
     }
+    // Cumplimiento del contrato de Calculable (a través de Articulo)
+    @Override 
+    public double calcularPrecioFinal(){
+        if (garantiaMeses>12) {
+            return getPrecio()*1.10; // 10% de recargo por garantia extendida.
+        }
+            return getPrecio();
+            }
+
 
     @Override
     public String toString() {

@@ -1,6 +1,14 @@
 package com.techlab.articulo.model;
 
-public class Categoria {
+// 1- Importar la interfaz identificable
+
+import com.techlab.articulo.interfaces.Identificable;
+
+// 2 - Declarar que la clase implementa la interfaz
+
+
+
+public class Categoria implements Identificable {
     private int codigo;
     private String nombre;
     private String descripcion;
@@ -12,6 +20,10 @@ public class Categoria {
         this.descripcion = descripcion;
     }
 
+    // 3 - Cumplimiento del contrato de Identificable
+
+    @Override 
+    
     // 2. Métodos Getters y Setters
     public int getCodigo() { return codigo; }
     public void setCodigo(int codigo) { this.codigo = codigo; }

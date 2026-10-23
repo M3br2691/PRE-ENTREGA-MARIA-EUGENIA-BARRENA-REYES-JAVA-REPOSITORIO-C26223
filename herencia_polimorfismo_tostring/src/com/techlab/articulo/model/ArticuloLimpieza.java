@@ -21,6 +21,21 @@ public class ArticuloLimpieza extends Articulo {
         return "Días restantes para el vencimiento: " + diasParaVencimiento;
     }
 
+    // Cumplimiento del contrato de Calculable (a través de la clase base Articulo)
+    
+    @Override 
+    public double calcularPrecioFinal(){
+        if (diasParaVencimiento<=7) {
+            return getPrecio() * 0.80; // 20% de descuento por vencimiento próximo     
+        }
+        if (diasParaVencimiento<=15) {
+            return getPrecio() * 0.90; // 10% de descuento
+        }
+        return getPrecio(); // precio normal
+    }
+
+
+
     @Override
     public String toString() {
         return super.toString() + " [subtipo limpieza]";

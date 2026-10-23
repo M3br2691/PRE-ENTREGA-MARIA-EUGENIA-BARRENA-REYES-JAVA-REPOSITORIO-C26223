@@ -19,11 +19,20 @@ public class ArticuloPeriferico extends Articulo {
     @Override
     public String getDetalleEspecifico() {
         return "Garantía: " + garantiaMeses + " meses";
+    // Cumplimiento del contrato de Calculable (a través de Articulo)
+    }@Override 
+    public double calcularPrecioFinal(){
+        if (garantiaMeses>12) {
+            return getPrecio()*1.10; // 10% de recargo si supera el año de garantía
+        }
+        return getPrecio();
     }
 
     @Override
     public String toString() {
         return super.toString() + " [subtipo periférico]";
     }
+    
+   
+    }
 
-}
